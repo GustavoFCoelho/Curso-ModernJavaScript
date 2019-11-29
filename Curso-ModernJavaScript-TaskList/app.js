@@ -26,20 +26,7 @@ function getTasks() {
     }
 
     tasks.forEach(function (task) {
-        const li = document.createElement('li');
-
-        li.className = "collection-item"
-        li.innerHTML = "<i class='fa fa-sort-up'></i><i class='fa fa-sort-down'></i>";
-
-        li.appendChild(document.createTextNode(task));
-
-        const link = document.createElement('a');
-        link.className = "delete-item secondary-content";
-        link.innerHTML = '<i class="fa fa-remove"></i>';
-
-        li.appendChild(link);
-
-        taskList.appendChild(li);
+        createTaskToList(task);
     })
 }
 
@@ -48,25 +35,31 @@ function addTask(e) {
         alert("Add a task");
         return;
     }
+    createTaskToList(taskInput.value);
+
+    storeTaskInLocalStorage(taskInput.value);
+
+    e.preventDefault();
+}
+
+function createTaskToList(task){
 
     const li = document.createElement('li');
 
     li.className = "collection-item"
     li.innerHTML = "<i class='fa fa-sort-up'></i><i class='fa fa-sort-down'></i>";
 
-    li.appendChild(document.createTextNode(taskInput.value));
+    li.appendChild(document.createTextNode(task));
 
     const link = document.createElement('a');
     link.className = "delete-item secondary-content";
     link.innerHTML = '<i class="fa fa-remove"></i>';
 
-    storeTaskInLocalStorage(taskInput.value);
+    
 
     li.appendChild(link);
 
     taskList.appendChild(li);
-
-    e.preventDefault();
 }
 
 function storeTaskInLocalStorage(task) {
@@ -156,11 +149,9 @@ function goDown(e) {
         let elements = document.querySelectorAll(".collection-item");
         
         elements.forEach(function(task){
-            console.log(e.target.parentElement)
             if(task.textContent === e.target.parentElement.textContent){
                 
                 if(elements[elements.length-1] === task){
-                    console.log("teste3");
                     return;
                 }
                 
@@ -170,7 +161,6 @@ function goDown(e) {
                 task.parentElement.insertBefore(bottomElement, task);
             }
         })
-        console.log(elements)
     }
 }
 
