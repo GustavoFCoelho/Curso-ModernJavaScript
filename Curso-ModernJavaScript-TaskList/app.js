@@ -139,8 +139,10 @@ function goUp(e) {
                 let upperElement = elements[elementIndex-1];
 
                 upperElement.parentElement.insertBefore(task, upperElement);
+                
             }
         })
+        setTaskNewOrder();
     }
 }
 
@@ -161,6 +163,7 @@ function goDown(e) {
                 task.parentElement.insertBefore(bottomElement, task);
             }
         })
+        setTaskNewOrder();
     }
 }
 
@@ -170,4 +173,13 @@ function findIndex(array, objeto) {
             return i;
         }
     }
+}
+
+function setTaskNewOrder(){
+    let tasks = [];
+    document.querySelectorAll(".collection-item").forEach(function (task) { 
+        tasks.push(task.textContent);
+    })
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 }
