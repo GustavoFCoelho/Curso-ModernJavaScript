@@ -65,6 +65,7 @@ function addTask(e) {
 
     e.preventDefault();
 
+
     jumpToFinalPage();
 }
 
@@ -89,7 +90,6 @@ function createTaskToList(task) {
     li.appendChild(link);
 
     if (pageGerada) {
-        console.log(taskInput)
         taskList.insertBefore(li, taskList.lastChild);
     } else {
         taskList.appendChild(li);
@@ -298,6 +298,8 @@ function parsePagesNumber(numero) {
     let inteiro = Number.parseInt(numero);
     if (numero > inteiro) {
         return inteiro + 1
+    } else if(numero == inteiro){
+        return inteiro
     } else {
         return inteiro - 1
     }
@@ -460,9 +462,18 @@ function jumpToFinalPage() {
         items.push(task);
     })
 
-    while (items.length % maxItensPerPage != 0) {
+    do {
         let item = items.pop()
         item.style.display = 'block';
         paginationIndexs.push(items.length);
+    } while (items.length % maxItensPerPage != 0);
+
+    if(document.querySelectorAll('.collection-item').length % maxItensPerPage != 0){
+        let ul = taskList.lastChild
+        let pageNumber = document.createElement("li");
+        pageNumber.classList.add("pagination-item");
+        pageNumber.innerHTML = '<a href="#!">' + (numberOfPages + 1) + '</a>';
+        ul.insertBefore(pageNumber, ul.lastChild)
+        numberOfPages++;
     }
 }
