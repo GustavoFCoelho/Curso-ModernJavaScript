@@ -468,7 +468,7 @@ function jumpToFinalPage() {
         paginationIndexs.push(items.length);
     } while (items.length % maxItensPerPage != 0);
 
-    if(document.querySelectorAll('.collection-item').length % maxItensPerPage != 0){
+    if(document.querySelectorAll('.collection-item').length % maxItensPerPage == 1){
         let ul = taskList.lastChild
         let pageNumber = document.createElement("li");
         pageNumber.classList.add("pagination-item");
