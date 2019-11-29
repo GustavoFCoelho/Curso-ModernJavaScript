@@ -8,6 +8,7 @@ let maxItensPerPage;
 let totalOfItens;
 let numberOfPages;
 let paginationIndexs = []
+let paginaAtual = 1;
 loadEventListeners();
 
 
@@ -24,6 +25,7 @@ function loadEventListeners() {
     taskList.addEventListener("click", goDown);
     taskList.addEventListener("click", changeNextPage);
     taskList.addEventListener("click", changePreviousPage);
+    taskList.addEventListener("click", jumpToPage);
     clearBtn.addEventListener("click", clearTasks);
     filter.addEventListener("keyup", filterTasks);
 }
@@ -244,8 +246,6 @@ function generatePaginationSystem() {
     maxItensPerPage = 5;
     numberOfPages = parsePagesNumber(totalOfItens/maxItensPerPage);
 
-    console.log(numberOfPages);
-
     if (totalOfItens > maxItensPerPage) {
         colecao.forEach(function (task) {
             let taskIndex = findIndex(colecao, task)
@@ -319,6 +319,8 @@ function changeNextPage(e){
         if(e.target.parentElement.parentElement.parentElement.firstChild.style.display === 'none'){
             e.target.parentElement.parentElement.parentElement.firstChild.style.display = 'inline';
         }
+
+        paginaAtual++;
     }
 }
 
@@ -355,8 +357,6 @@ function changePreviousPage(e) {
 
         paginationIndexs = aux;
 
-        console.log(e.target.parentElement.parentElement.parentElement.lastChild)
-
         if(paginationIndexs[0] === 0){
             e.target.parentElement.parentElement.style.display = 'none';
         }
@@ -364,5 +364,72 @@ function changePreviousPage(e) {
         if(e.target.parentElement.parentElement.parentElement.lastChild.style.display === 'none'){
             e.target.parentElement.parentElement.parentElement.lastChild.style.display = 'inline';
         }
+
+        paginaAtual--;
+    }
+}
+
+//====================================================================
+// Pular para página selecionada
+//====================================================================
+function jumpToPage(e) {
+    if(e.target.parentElement.classList.contains("pagination-item")){
+        
+        let pagina = e.target.textContent
+
+        if(pagina == paginaAtual){
+            return;
+        }
+
+        let elements = document.querySelectorAll(".collection-item");
+
+        elements.forEach(function(task){
+            task.style.display = 'none';
+        })
+
+        if(pagina > paginaAtual){
+            let aux = [];
+
+            let i = 0
+            while (paginationIndexs.length != 0) {
+                let index = paginationIndexs[i] + (maxItensPerPage * (pagina - paginaAtual));
+                elements[index].style.display = 'block';
+
+                aux.push(index);
+
+                paginationIndexs.reverse();
+                paginationIndexs.pop();
+                paginationIndexs.reverse();
+                if(elements[index + 1] === undefined)
+                    break;                
+            }
+
+            paginationIndexs = aux;
+        } else {
+            let aux = [];
+
+            let i = 0
+            let index;
+            while (paginationIndexs.length != 0) {
+                index = paginationIndexs[i] - maxItensPerPage * (paginaAtual - pagina) ;
+                elements[index].style.display = 'block';
+
+                aux.push(index);
+
+                paginationIndexs.reverse();
+                paginationIndexs.pop();
+                paginationIndexs.reverse();                
+            }
+
+            while(aux.length != maxItensPerPage){
+                index++;
+                elements[index].style.display = 'block';
+                aux.push(index);
+            }
+
+            paginationIndexs = aux;
+        }
+
+        paginaAtual = pagina;
     }
 }
