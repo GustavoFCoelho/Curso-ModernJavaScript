@@ -9,6 +9,8 @@ let totalOfItens;
 let numberOfPages;
 let paginationIndexs = []
 let paginaAtual = 1;
+let pageGerada = false;
+
 loadEventListeners();
 
 
@@ -57,8 +59,13 @@ function addTask(e) {
     createTaskToList(taskInput.value);
 
     storeTaskInLocalStorage(taskInput.value);
+    if (!pageGerada) {
+        generatePaginationSystem();
+    }
 
     e.preventDefault();
+
+    jumpToFinalPage();
 }
 
 //====================================================================
@@ -81,7 +88,13 @@ function createTaskToList(task) {
 
     li.appendChild(link);
 
-    taskList.appendChild(li);
+    if (pageGerada) {
+        console.log(taskInput)
+        taskList.insertBefore(li, taskList.lastChild);
+    } else {
+        taskList.appendChild(li);
+    }
+
 }
 
 //====================================================================
@@ -244,9 +257,10 @@ function generatePaginationSystem() {
 
     totalOfItens = colecao.length;
     maxItensPerPage = 5;
-    numberOfPages = parsePagesNumber(totalOfItens/maxItensPerPage);
+    numberOfPages = parsePagesNumber(totalOfItens / maxItensPerPage);
 
     if (totalOfItens > maxItensPerPage) {
+        pageGerada = true;
         colecao.forEach(function (task) {
             let taskIndex = findIndex(colecao, task)
             if (taskIndex > maxItensPerPage - 1) {
@@ -265,7 +279,7 @@ function generatePaginationSystem() {
         for (let i = 0; i < numberOfPages; i++) {
             let pageNumber = document.createElement("li");
             pageNumber.classList.add("pagination-item");
-            pageNumber.innerHTML = '<a href="#!">'+ (i+1) +'</a>';
+            pageNumber.innerHTML = '<a href="#!">' + (i + 1) + '</a>';
             ul.append(pageNumber)
         }
 
@@ -282,9 +296,9 @@ function generatePaginationSystem() {
 //====================================================================
 function parsePagesNumber(numero) {
     let inteiro = Number.parseInt(numero);
-    if(numero > inteiro){
+    if (numero > inteiro) {
         return inteiro + 1
-    } else { 
+    } else {
         return inteiro - 1
     }
 }
@@ -292,15 +306,15 @@ function parsePagesNumber(numero) {
 //====================================================================
 // Avança para a próxima página
 //====================================================================
-function changeNextPage(e){
-    if(e.target.classList.contains("fa-arrow-right")){
+function changeNextPage(e) {
+    if (e.target.classList.contains("fa-arrow-right")) {
         let elements = document.querySelectorAll('.collection-item');
 
         let aux = [];
 
-        paginationIndexs.forEach(function (indice) { 
+        paginationIndexs.forEach(function (indice) {
             elements[indice].style.display = 'none';
-            if(elements[indice + maxItensPerPage] !== undefined){
+            if (elements[indice + maxItensPerPage] !== undefined) {
                 elements[indice + maxItensPerPage].style.display = 'block';
                 aux.push(indice + maxItensPerPage);
             }
@@ -312,11 +326,11 @@ function changeNextPage(e){
 
         paginationIndexs = aux;
 
-        if(paginationIndexs.length < maxItensPerPage){
+        if (paginaAtual == numberOfPages) {
             e.target.parentElement.parentElement.style.display = 'none';
         }
 
-        if(e.target.parentElement.parentElement.parentElement.firstChild.style.display === 'none'){
+        if (e.target.parentElement.parentElement.parentElement.firstChild.style.display === 'none') {
             e.target.parentElement.parentElement.parentElement.firstChild.style.display = 'inline';
         }
 
@@ -328,7 +342,7 @@ function changeNextPage(e){
 // Volta para página anterior
 //====================================================================
 function changePreviousPage(e) {
-    if(e.target.classList.contains("fa-arrow-left")){
+    if (e.target.classList.contains("fa-arrow-left")) {
         let elements = document.querySelectorAll('.collection-item');
 
         let aux = [];
@@ -337,11 +351,11 @@ function changePreviousPage(e) {
 
         let paginationLenght = paginationIndexs.length;
 
-        while (paginationIndexs.length !== 0) { 
+        while (paginationIndexs.length !== 0) {
             let indice = paginationIndexs.pop();
             elements[indice].style.display = 'none';
 
-            if(elements[indice - paginationLenght] !== undefined){
+            if (elements[indice - paginationLenght] !== undefined) {
                 elements[indice - paginationLenght].style.display = 'block';
                 aux.push(indice - paginationLenght);
             }
@@ -349,7 +363,7 @@ function changePreviousPage(e) {
             lastIndex = indice - paginationLenght;
         }
 
-        while(aux.length < maxItensPerPage){
+        while (aux.length < maxItensPerPage) {
             lastIndex--;
             elements[lastIndex].style.display = 'block';
             aux.push(lastIndex);
@@ -357,11 +371,11 @@ function changePreviousPage(e) {
 
         paginationIndexs = aux;
 
-        if(paginationIndexs[0] === 0){
+        if (paginationIndexs[0] === 0) {
             e.target.parentElement.parentElement.style.display = 'none';
         }
 
-        if(e.target.parentElement.parentElement.parentElement.lastChild.style.display === 'none'){
+        if (e.target.parentElement.parentElement.parentElement.lastChild.style.display === 'none') {
             e.target.parentElement.parentElement.parentElement.lastChild.style.display = 'inline';
         }
 
@@ -373,21 +387,21 @@ function changePreviousPage(e) {
 // Pular para página selecionada
 //====================================================================
 function jumpToPage(e) {
-    if(e.target.parentElement.classList.contains("pagination-item")){
-        
+    if (e.target.parentElement.classList.contains("pagination-item")) {
+
         let pagina = e.target.textContent
 
-        if(pagina == paginaAtual){
+        if (pagina == paginaAtual) {
             return;
         }
 
         let elements = document.querySelectorAll(".collection-item");
 
-        elements.forEach(function(task){
+        elements.forEach(function (task) {
             task.style.display = 'none';
         })
 
-        if(pagina > paginaAtual){
+        if (pagina > paginaAtual) {
             let aux = [];
 
             let i = 0
@@ -400,8 +414,8 @@ function jumpToPage(e) {
                 paginationIndexs.reverse();
                 paginationIndexs.pop();
                 paginationIndexs.reverse();
-                if(elements[index + 1] === undefined)
-                    break;                
+                if (elements[index + 1] === undefined)
+                    break;
             }
 
             paginationIndexs = aux;
@@ -411,17 +425,17 @@ function jumpToPage(e) {
             let i = 0
             let index;
             while (paginationIndexs.length != 0) {
-                index = paginationIndexs[i] - maxItensPerPage * (paginaAtual - pagina) ;
+                index = paginationIndexs[i] - maxItensPerPage * (paginaAtual - pagina);
                 elements[index].style.display = 'block';
 
                 aux.push(index);
 
                 paginationIndexs.reverse();
                 paginationIndexs.pop();
-                paginationIndexs.reverse();                
+                paginationIndexs.reverse();
             }
 
-            while(aux.length != maxItensPerPage){
+            while (aux.length != maxItensPerPage) {
                 index++;
                 elements[index].style.display = 'block';
                 aux.push(index);
@@ -431,5 +445,24 @@ function jumpToPage(e) {
         }
 
         paginaAtual = pagina;
+    }
+}
+//====================================================================
+// Pular para página final
+//====================================================================
+function jumpToFinalPage() {
+    let elements = document.querySelectorAll('.collection-item');
+
+    let items = []
+
+    elements.forEach(function (task) {
+        task.style.display = 'none';
+        items.push(task);
+    })
+
+    while (items.length % maxItensPerPage != 0) {
+        let item = items.pop()
+        item.style.display = 'block';
+        paginationIndexs.push(items.length);
     }
 }
