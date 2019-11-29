@@ -11,6 +11,8 @@ function loadEventListeners() {
     document.addEventListener('DOMContentLoaded', getTasks)
     form.addEventListener("submit", addTask);
     taskList.addEventListener("click", removeTask);
+    taskList.addEventListener("click", goUp);
+    taskList.addEventListener("click", goDown);
     clearBtn.addEventListener("click", clearTasks);
     filter.addEventListener("keyup", filterTasks);
 }
@@ -27,6 +29,7 @@ function getTasks() {
         const li = document.createElement('li');
 
         li.className = "collection-item"
+        li.innerHTML = "<i class='fa fa-sort-up'></i><i class='fa fa-sort-down'></i>";
 
         li.appendChild(document.createTextNode(task));
 
@@ -49,6 +52,7 @@ function addTask(e) {
     const li = document.createElement('li');
 
     li.className = "collection-item"
+    li.innerHTML = "<i class='fa fa-sort-up'></i><i class='fa fa-sort-down'></i>";
 
     li.appendChild(document.createTextNode(taskInput.value));
 
@@ -120,11 +124,60 @@ function filterTasks(e) {
     const text = e.target.value.toLowerCase();
 
     document.querySelectorAll(".collection-item").forEach(function (task) {
-        const item = task.firstChild.textContent;
+        const item = task.textContent;
         if (item.toLowerCase().indexOf(text) != -1) {
             task.style.display = 'block';
         } else {
             task.style.display = 'none';
         }
     })
+}
+
+function goUp(e) {
+    if(e.target.classList.contains("fa-sort-up")){
+        let elements = document.querySelectorAll(".collection-item");
+        elements.forEach(function(task){
+            if(task.textContent === e.target.parentElement.textContent){
+                if(elements[0] === task){
+                    return;
+                }
+                
+                let elementIndex = findIndex(elements, task);
+                let upperElement = elements[elementIndex-1];
+
+                upperElement.parentElement.insertBefore(task, upperElement);
+            }
+        })
+    }
+}
+
+function goDown(e) {
+    if(e.target.classList.contains("fa-sort-down")){
+        let elements = document.querySelectorAll(".collection-item");
+        
+        elements.forEach(function(task){
+            console.log(e.target.parentElement)
+            if(task.textContent === e.target.parentElement.textContent){
+                
+                if(elements[elements.length-1] === task){
+                    console.log("teste3");
+                    return;
+                }
+                
+                let elementIndex = findIndex(elements, task);
+                let bottomElement = elements[elementIndex+1];
+
+                task.parentElement.insertBefore(bottomElement, task);
+            }
+        })
+        console.log(elements)
+    }
+}
+
+function findIndex(array, objeto) {
+    for (let i = 0; i < array.length; i++) {
+        if(array[i] === objeto){
+            return i;
+        }
+    }
 }
