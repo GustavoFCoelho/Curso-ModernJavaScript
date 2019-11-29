@@ -4,11 +4,20 @@ const clearBtn = document.querySelector(".clear-tasks");
 const filter = document.querySelector("#filter");
 const taskInput = document.querySelector("#task");
 
+let maxItensPerPage;
+let totalOfItens;
+let numberOfPages;
+
 loadEventListeners();
 
+
+//====================================================================
+// Carrega Lista de eventos
+//====================================================================
 function loadEventListeners() {
 
     document.addEventListener('DOMContentLoaded', getTasks)
+    document.addEventListener('DOMContentLoaded', generatePaginationSystem)
     form.addEventListener("submit", addTask);
     taskList.addEventListener("click", removeTask);
     taskList.addEventListener("click", goUp);
@@ -17,6 +26,9 @@ function loadEventListeners() {
     filter.addEventListener("keyup", filterTasks);
 }
 
+//====================================================================
+// Carrega tasks salvas no localstorage
+//====================================================================
 function getTasks() {
     let tasks;
     if (localStorage.getItem('tasks') === null || localStorage.getItem('tasks') == undefined) {
@@ -30,6 +42,9 @@ function getTasks() {
     })
 }
 
+//====================================================================
+// Adiciona nova tarefa
+//====================================================================
 function addTask(e) {
     if (taskInput.value === "") {
         alert("Add a task");
@@ -42,7 +57,10 @@ function addTask(e) {
     e.preventDefault();
 }
 
-function createTaskToList(task){
+//====================================================================
+// Adiciona novo elemento para a lista
+//====================================================================
+function createTaskToList(task) {
 
     const li = document.createElement('li');
 
@@ -55,13 +73,16 @@ function createTaskToList(task){
     link.className = "delete-item secondary-content";
     link.innerHTML = '<i class="fa fa-remove"></i>';
 
-    
+
 
     li.appendChild(link);
 
     taskList.appendChild(li);
 }
 
+//====================================================================
+// Adiciona novo item na localstorage
+//====================================================================
 function storeTaskInLocalStorage(task) {
     let tasks;
     if (localStorage.getItem('tasks') === null) {
@@ -75,15 +96,21 @@ function storeTaskInLocalStorage(task) {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
+//====================================================================
+// Remove tarefa
+//====================================================================
 function removeTask(e) {
     if (e.target.parentElement.classList.contains("delete-item")) {
-        if (confirm("Are you sure?")){
+        if (confirm("Are you sure?")) {
             e.target.parentElement.parentElement.remove();
             removeTaskFromStorage(e.target.parentElement.parentElement)
         }
     }
 }
 
+//====================================================================
+// Remove tarefa do localstorage
+//====================================================================
 function removeTaskFromStorage(taskItem) {
     let tasks;
     if (localStorage.getItem('tasks') === null || localStorage.getItem('tasks') === undefined) {
@@ -92,8 +119,8 @@ function removeTaskFromStorage(taskItem) {
         tasks = JSON.parse(localStorage.getItem('tasks'));
     }
 
-    tasks.forEach(function(task, index) {
-        if(taskItem.textContent === task){
+    tasks.forEach(function (task, index) {
+        if (taskItem.textContent === task) {
             tasks.splice(index, 1);
         }
     });
@@ -101,6 +128,9 @@ function removeTaskFromStorage(taskItem) {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
+//====================================================================
+// Limpa todas as tarefas
+//====================================================================
 function clearTasks() {
     while (taskList.firstChild) {
         taskList.removeChild(taskList.firstChild);
@@ -109,10 +139,16 @@ function clearTasks() {
     clearAllTask();
 }
 
+//====================================================================
+// Limpa todas as tarefas do localstorage
+//====================================================================
 function clearAllTask() {
     localStorage.clear();
 }
 
+//====================================================================
+// Busca as tarefas
+//====================================================================
 function filterTasks(e) {
     const text = e.target.value.toLowerCase();
 
@@ -126,39 +162,45 @@ function filterTasks(e) {
     })
 }
 
+//====================================================================
+// Troca a posição do elemento com o elemento de cima
+//====================================================================
 function goUp(e) {
-    if(e.target.classList.contains("fa-sort-up")){
+    if (e.target.classList.contains("fa-sort-up")) {
         let elements = document.querySelectorAll(".collection-item");
-        elements.forEach(function(task){
-            if(task.textContent === e.target.parentElement.textContent){
-                if(elements[0] === task){
+        elements.forEach(function (task) {
+            if (task.textContent === e.target.parentElement.textContent) {
+                if (elements[0] === task) {
                     return;
                 }
-                
+
                 let elementIndex = findIndex(elements, task);
-                let upperElement = elements[elementIndex-1];
+                let upperElement = elements[elementIndex - 1];
 
                 upperElement.parentElement.insertBefore(task, upperElement);
-                
+
             }
         })
         setTaskNewOrder();
     }
 }
 
+//====================================================================
+// Troca a posição com o elemento a baixo
+//====================================================================
 function goDown(e) {
-    if(e.target.classList.contains("fa-sort-down")){
+    if (e.target.classList.contains("fa-sort-down")) {
         let elements = document.querySelectorAll(".collection-item");
-        
-        elements.forEach(function(task){
-            if(task.textContent === e.target.parentElement.textContent){
-                
-                if(elements[elements.length-1] === task){
+
+        elements.forEach(function (task) {
+            if (task.textContent === e.target.parentElement.textContent) {
+
+                if (elements[elements.length - 1] === task) {
                     return;
                 }
-                
+
                 let elementIndex = findIndex(elements, task);
-                let bottomElement = elements[elementIndex+1];
+                let bottomElement = elements[elementIndex + 1];
 
                 task.parentElement.insertBefore(bottomElement, task);
             }
@@ -167,19 +209,78 @@ function goDown(e) {
     }
 }
 
+//====================================================================
+// Procura o index em um array
+//====================================================================
 function findIndex(array, objeto) {
     for (let i = 0; i < array.length; i++) {
-        if(array[i] === objeto){
+        if (array[i] === objeto) {
             return i;
         }
     }
 }
 
-function setTaskNewOrder(){
+//====================================================================
+// Após a troca de posição troca seta a nova ordem no localstorage
+//====================================================================
+function setTaskNewOrder() {
     let tasks = [];
-    document.querySelectorAll(".collection-item").forEach(function (task) { 
+    document.querySelectorAll(".collection-item").forEach(function (task) {
         tasks.push(task.textContent);
     })
 
     localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+//====================================================================
+// Gera sistema de paginação
+//====================================================================
+function generatePaginationSystem() {
+    let colecao = document.querySelectorAll(".collection-item");
+
+    totalOfItens = colecao.length;
+    maxItensPerPage = 5;
+    numberOfPages = parsePagesNumber(totalOfItens/maxItensPerPage);
+
+    console.log(numberOfPages);
+
+    if (totalOfItens > maxItensPerPage) {
+        colecao.forEach(function (task) {
+            let taskIndex = findIndex(colecao, task)
+            if (taskIndex > maxItensPerPage - 1) {
+                colecao[taskIndex].style.display = "none";
+            }
+        })
+
+        let ul = document.createElement("ul");
+        ul.classList.add("pagination");
+        let previousPage = document.createElement("li");
+        previousPage.innerHTML = '<a href="#!"><i class="fa fa-arrow-left"></i></a>';
+        ul.append(previousPage);
+
+        for (let i = 0; i < numberOfPages; i++) {
+            let pageNumber = document.createElement("li");
+            pageNumber.classList.add("pagination-item");
+            pageNumber.innerHTML = '<a href="#!">'+ (i+1) +'</a>';
+            ul.append(pageNumber)
+        }
+
+        let nextPage = document.createElement("li");
+        nextPage.innerHTML = '<a href="#!"><i class="fa fa-arrow-right"></i></a>';
+        ul.append(nextPage);
+
+        taskList.append(ul);
+    }
+}
+
+//====================================================================
+// Retorna a quantidade de páginas
+//====================================================================
+function parsePagesNumber(numero) {
+    let inteiro = Number.parseInt(numero);
+    if(numero > inteiro){
+        return inteiro + 1
+    } else { 
+        return inteiro - 1
+    }
 }
