@@ -30,6 +30,7 @@ function loadEventListeners() {
     taskList.addEventListener("click", jumpToPage);
     clearBtn.addEventListener("click", clearTasks);
     filter.addEventListener("keyup", filterTasks);
+    filter.addEventListener("blur", viewFilter);
 }
 
 //====================================================================
@@ -177,6 +178,19 @@ function filterTasks(e) {
             task.style.display = 'none';
         }
     })
+
+    if(e.target.value !== '' && pageGerada == true){
+        taskList.lastChild.remove();
+        pageGerada = false;
+    }
+
+    
+}
+
+function viewFilter(e){
+    if(e.target.value === ''){
+        generatePaginationSystem();
+    }
 }
 
 //====================================================================
@@ -449,6 +463,7 @@ function jumpToPage(e) {
         paginaAtual = pagina;
     }
 }
+
 //====================================================================
 // Pular para página final
 //====================================================================
@@ -468,7 +483,7 @@ function jumpToFinalPage() {
         paginationIndexs.push(items.length);
     } while (items.length % maxItensPerPage != 0);
 
-    if(document.querySelectorAll('.collection-item').length % maxItensPerPage == 1){
+    if(document.querySelectorAll('.collection-item').length % maxItensPerPage == 1 && document.querySelectorAll('.collection-item').length > 1){
         let ul = taskList.lastChild
         let pageNumber = document.createElement("li");
         pageNumber.classList.add("pagination-item");
