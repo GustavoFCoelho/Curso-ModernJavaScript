@@ -155,6 +155,9 @@ function clearTasks() {
     }
 
     clearAllTask();
+
+    taskList.lastChild.remove();
+    pageGerada = false;
 }
 
 //====================================================================
