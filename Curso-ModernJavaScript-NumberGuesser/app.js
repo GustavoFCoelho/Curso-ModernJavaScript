@@ -27,17 +27,20 @@ guessBtn.addEventListener('click', function () {
         return;
     }
 
+    guessesLeft--;
+
     if(guess === winningNum){
         gameOver(true, `${winningNum} is correct, YOU WIN`);
-    } else {
-        guessesLeft -= 1
-
-        if(guessesLeft === 0){
-            gameOver(false, `Game Over, you lost. The correct number was ${winningNum}`)
-        } else {
-            setMessage(`${guess} is not correct, ${guessesLeft} guesses left`, 'orange')
-        }
+        return;
+    } else if(guess > winningNum) {
+        setMessage(`${guess} is greater than the number, ${guessesLeft} guesses left`, 'orange')
+    } else if(guess < winningNum){
+        setMessage(`${guess} is lesser than the number, ${guessesLeft} guesses left`, 'orange')
     }
+
+    if(guessesLeft === 0){
+        gameOver(false, `Game Over, you lost. The correct number was ${winningNum}`)
+    } 
 })
 
 function gameOver(won, msg) {
