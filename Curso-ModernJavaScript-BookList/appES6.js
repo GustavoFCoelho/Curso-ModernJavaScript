@@ -18,7 +18,7 @@ class UI {
         row.innerHTML = `<td class="item-title">${book.title}</td>
                          <td class="item-author">${book.author}</td>
                          <td class="item-isbn">${book.isbn}</td>
-                         <td><a href="#" class="delete">X</a></td>`;
+                         <td><a href="#" class="delete bg-dark"><i class="fa fa-trash"></i></a></td>`;
         list.appendChild(row);
     }
 
@@ -117,6 +117,10 @@ class Events {
             return;
         }
 
+        if(!validIsbn(Store.getBooks())){
+            return;
+        }
+
         const book = new Book(title, author, isbn);
 
         Store.addBook(book)
@@ -129,22 +133,29 @@ class Events {
 
     static remove(e) {
 
-        if (e.target.className === "delete") {
-            Store.removeBooks(e.target.parentElement.previousElementSibling.textContent);
+        if (e.target.className === "fa fa-trash") {
+            Store.removeBooks(e.target.parentElement.parentElement.previousElementSibling.textContent);
             const ui = new UI();
-            ui.deleteBook(e.target);
+            ui.deleteBook(e.target.parentElement);
             ui.showAlert("The book was removed from the list", "success");
             e.preventDefault();
         }
     }
 
     static selectElement(e) {
-        if (e.target.className === "delete") {
+        if (e.target.className === "fa fa-trash") {
             return;
         }
 
+        document.getElementById("bookList").childNodes.forEach(child =>{
+            if(child.style.backgroundColor === "rgb(230, 230, 230)"){
+                child.style.backgroundColor = "white"
+            }
+        })
+
         if (e.target.parentElement.classList.contains("selected-item")) {
             const row = e.target.parentElement;
+            
             row.childNodes.forEach(node =>{
                 if(node.className === "item-title"){
                     inputTitle.value = node.textContent;
@@ -156,6 +167,10 @@ class Events {
                 
             })
             inputISBN.disabled = true;
+            
+            row.style.backgroundColor = "#e6e6e6";
+            
+            document.getElementById('submitBtn').value = "Alterar";
         }
     }
 
@@ -191,9 +206,26 @@ class Events {
             }
         })
 
+        childNode.style.backgroundColor = "white";
+
         ui.clearFields();
         Store.alterBook(book);
+
+        document.getElementById('submitBtn').value = "Adicionar";
+        
     }
+}
+
+function validIsbn(books) {
+    let isValid = true;
+    let ui = new UI();
+    books.forEach(book=>{
+        if(book.isbn == inputISBN.value){
+            ui.showAlert("This ISBN alredy is registered! Please put a valid one.", "error");
+            isValid = false;
+        }
+    })
+    return isValid;
 }
 
 const form = document.getElementById("book-form");
@@ -204,4 +236,3 @@ form.addEventListener("submit", Events.alterar)
 bookList.addEventListener("click", Events.remove);
 bookList.addEventListener("click", Events.selectElement);
 document.addEventListener("DOMContentLoaded", Store.displayBooks);
-

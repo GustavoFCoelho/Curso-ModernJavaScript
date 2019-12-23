@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Book List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         .success, .error{
             color: white;
@@ -44,15 +45,15 @@
                 <label for="isbn">ISBN</label>
                 <input type="text" class="u-full-width" id="isbn">
             </div>
-            <input type="submit" class="u-full-width" value="Adicionar">
+            <input type="submit" id="submitBtn" class="u-full-width" value="Adicionar">
         </form>
         <hr>
         <table class="u-full-width">
             <thead>
                 <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>ISBN</th>
+                    <th>Title <i class="fa fa-book"></i></th>
+                    <th>Author <i class="fa fa-user"></i></th>
+                    <th>ISBN <i class="fa fa-hashtag"></i></th>
                     <th></th>
                 </tr>
             </thead>
