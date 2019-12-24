@@ -1,5 +1,5 @@
-class UI{
-    constructor(){
+class UI {
+    constructor() {
         this.post = document.querySelector('#posts');
         this.titleInput = document.querySelector('#title');
         this.bodyInput = document.querySelector('#body');
@@ -8,9 +8,9 @@ class UI{
         this.forState = 'add';
     }
 
-    showPosts(posts){
+    showPosts(posts) {
         let output = '';
-        posts.forEach((post)=>{
+        posts.forEach((post) => {
             output += `
                 <div class="card mt-3">
                     <div class="card-body">
@@ -22,6 +22,13 @@ class UI{
                         <a href="#" class="delete card-link" data-id="${post.id}">
                             <i class="fa fa-remove"></i>
                         </a>
+                        <span class="ml-5">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </span>
                     </div>
                 </div>
             `
@@ -30,13 +37,13 @@ class UI{
         this.post.innerHTML = output;
     }
 
-    showAlert(message, classes){
+    showAlert(message, classes) {
         this.clearAlert();
 
         const div = document.createElement("div");
         div.className = classes;
         div.appendChild(document.createTextNode(message));
-        
+
         const container = document.querySelector('.postsContainer');
         const posts = document.querySelector('#posts');
 
@@ -47,20 +54,20 @@ class UI{
         }, 3000);
     }
 
-    clearAlert(){
+    clearAlert() {
         const currentAlert = document.querySelector(".alert");
 
-        if(currentAlert){
+        if (currentAlert) {
             currentAlert.remove();
         }
     }
 
-    clearFields(){
+    clearFields() {
         this.titleInput.value = ''
         this.bodyInput.value = ''
     }
 
-    fillForm(data){
+    fillForm(data) {
         this.titleInput.value = data.title;
         this.bodyInput.value = data.body;
         this.idInput.value = data.id
@@ -68,8 +75,8 @@ class UI{
         this.changeFormState("edit");
     }
 
-    changeFormState(state){
-        if(state === "edit"){
+    changeFormState(state) {
+        if (state === "edit") {
             this.postSubmit.textContent = "Update Post";
             this.postSubmit.className = "post-submit btn btn-warning btn-block";
 
@@ -87,7 +94,7 @@ class UI{
 
             const buttonCnl = document.querySelector('.post-cancel');
 
-            if(buttonCnl){
+            if (buttonCnl) {
                 buttonCnl.remove();
             }
 
@@ -96,7 +103,7 @@ class UI{
         }
     }
 
-    clearIdInput(){
+    clearIdInput() {
         this.idInput.value = '';
     }
 }

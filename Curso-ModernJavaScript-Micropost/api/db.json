@@ -1,9 +1,10 @@
 {
   "posts": [
     {
-      "title": "As longas tranças de um careca",
-      "body": "is the one",
+      "title": "Em Alto mar",
+      "body": "Teste",
       "id": 1
     }
-  ]
+  ],
+  "users": []
 }
